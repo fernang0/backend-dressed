@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "users")
@@ -18,10 +19,10 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false)
+    @Column(name = "password_hash", nullable = false)
     private String password;
 
-    @Column(nullable = false)
+    @Transient
     private String role;
 
     public Long getId() {
