@@ -3,6 +3,7 @@ package cl.dressed.backend.module.auth.controller;
 import cl.dressed.backend.module.auth.dto.AuthDto;
 import cl.dressed.backend.module.auth.service.AuthService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,8 +20,10 @@ public class AuthController {
         this.authService = authService;
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<AuthDto.AuthResponse> login(@Valid @RequestBody AuthDto.AuthRequest request) {
-        return ResponseEntity.ok(authService.login(request));
+    @PostMapping("/register")
+    public ResponseEntity<AuthDto.RegisterResponse> register(
+        @Valid @RequestBody AuthDto.RegisterRequest request
+    ) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(authService.register(request));
     }
 }
