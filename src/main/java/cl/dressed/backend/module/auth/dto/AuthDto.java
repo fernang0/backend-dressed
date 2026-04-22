@@ -30,4 +30,22 @@ public final class AuthDto {
         String token
     ) {
     }
+
+    public record LoginRequest(
+        @NotBlank(message = "email is required")
+        @Email(message = "email format is invalid")
+        String email,
+
+        @NotBlank(message = "password is required")
+        String password
+    ) {
+    }
+
+    public record LoginResponse(
+        Long id,
+        String email,
+        Boolean active,
+        String token
+    ) {
+    }
 }

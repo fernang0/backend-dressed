@@ -16,7 +16,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(AuthException.class)
     public ResponseEntity<Map<String, Object>> handleAuthException(AuthException ex) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorBody(HttpStatus.CONFLICT, ex.getMessage()));
+        // Si el mensaje menciona credenciales, es un error de autenticación (401)
+        // Si no, es un error de conflicto de registro (409)
+        HttpStatus status = ex.getMessage().toLowerCase().contains("credencial")
+            ? HttpStatus.UNAUTHORIZED
+            : HttpStatus.CONFLICT;
+        
+        return ResponseEntity.status(status).body(errorBody(status, ex.getMessage()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
