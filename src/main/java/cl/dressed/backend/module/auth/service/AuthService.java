@@ -4,6 +4,7 @@ import cl.dressed.backend.module.auth.dto.AuthDto;
 import cl.dressed.backend.module.auth.entity.User;
 import cl.dressed.backend.module.auth.exception.AuthException;
 import cl.dressed.backend.module.auth.repository.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,9 +12,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public AuthService(UserRepository userRepository) {
+    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional
@@ -25,7 +28,7 @@ public class AuthService {
 
         User user = new User();
         user.setEmail(email);
-        user.setPassword(request.password());
+        user.setPassword(passwordEncoder.encode(request.password()));
         user.setRole("USER");
 
         User savedUser = userRepository.save(user);

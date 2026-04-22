@@ -17,12 +17,16 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @ExtendWith(MockitoExtension.class)
 class AuthServiceTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private PasswordEncoder passwordEncoder;
 
     @InjectMocks
     private AuthService authService;
@@ -32,11 +36,12 @@ class AuthServiceTest {
         AuthDto.RegisterRequest request = new AuthDto.RegisterRequest("test@example.com", "password123");
 
         when(userRepository.existsByEmail("test@example.com")).thenReturn(false);
+        when(passwordEncoder.encode("password123")).thenReturn("bcrypt-hash");
 
         User persistedUser = new User();
         persistedUser.setId(10L);
         persistedUser.setEmail("test@example.com");
-        persistedUser.setPassword("password123");
+        persistedUser.setPassword("bcrypt-hash");
         persistedUser.setRole("USER");
 
         when(userRepository.save(any(User.class))).thenReturn(persistedUser);
@@ -48,7 +53,7 @@ class AuthServiceTest {
         User toPersist = userCaptor.getValue();
 
         assertThat(toPersist.getEmail()).isEqualTo("test@example.com");
-        assertThat(toPersist.getPassword()).isEqualTo("password123");
+        assertThat(toPersist.getPassword()).isEqualTo("bcrypt-hash");
         assertThat(toPersist.getRole()).isEqualTo("USER");
         assertThat(response.id()).isEqualTo(10L);
         assertThat(response.email()).isEqualTo("test@example.com");
