@@ -11,6 +11,7 @@ import cl.dressed.backend.module.auth.dto.AuthDto;
 import cl.dressed.backend.module.auth.entity.User;
 import cl.dressed.backend.module.auth.exception.AuthException;
 import cl.dressed.backend.module.auth.repository.UserRepository;
+import cl.dressed.backend.module.auth.security.JwtService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -28,6 +29,9 @@ class AuthServiceTest {
     @Mock
     private PasswordEncoder passwordEncoder;
 
+    @Mock
+    private JwtService jwtService;
+
     @InjectMocks
     private AuthService authService;
 
@@ -37,6 +41,7 @@ class AuthServiceTest {
 
         when(userRepository.existsByEmail("test@example.com")).thenReturn(false);
         when(passwordEncoder.encode("password123")).thenReturn("bcrypt-hash");
+        when(jwtService.generateToken(10L, "test@example.com")).thenReturn("jwt-token");
 
         User persistedUser = new User();
         persistedUser.setId(10L);
@@ -58,6 +63,7 @@ class AuthServiceTest {
         assertThat(response.id()).isEqualTo(10L);
         assertThat(response.email()).isEqualTo("test@example.com");
         assertThat(response.role()).isEqualTo("USER");
+        assertThat(response.token()).isEqualTo("jwt-token");
     }
 
     @Test

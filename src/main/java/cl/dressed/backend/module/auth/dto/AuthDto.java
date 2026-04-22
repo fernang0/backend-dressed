@@ -24,7 +24,8 @@ public final class AuthDto {
         public record RegisterResponse(
                 Long id,
                 String email,
-                String role
+            String role,
+            String token
     ) {
     }
 }
