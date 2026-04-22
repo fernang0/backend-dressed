@@ -77,4 +77,59 @@ class AuthServiceTest {
 
         verify(userRepository, never()).save(any(User.class));
     }
+
+    @Test
+    void loginShouldReturnTokenWhenCredentialsAreValid() {
+        AuthDto.LoginRequest request = new AuthDto.LoginRequest("test@example.com", "password123");
+
+        User user = new User();
+        user.setId(10L);
+        user.setEmail("test@example.com");
+        user.setPasswordHash("hashed-password");
+        user.setActive(true);
+
+        when(userRepository.findByEmail("test@example.com")).thenReturn(java.util.Optional.of(user));
+        when(passwordEncoder.matches("password123", "hashed-password")).thenReturn(true);
+        when(jwtService.generateToken(10L, "test@example.com")).thenReturn("jwt-token");
+
+        AuthDto.LoginResponse response = authService.login(request);
+
+        assertThat(response.id()).isEqualTo(10L);
+        assertThat(response.email()).isEqualTo("test@example.com");
+        assertThat(response.active()).isTrue();
+        assertThat(response.token()).isEqualTo("jwt-token");
+    }
+
+    @Test
+    void loginShouldThrowExceptionWhenEmailDoesNotExist() {
+        AuthDto.LoginRequest request = new AuthDto.LoginRequest("nonexistent@example.com", "password123");
+
+        when(userRepository.findByEmail("nonexistent@example.com")).thenReturn(java.util.Optional.empty());
+
+        assertThatThrownBy(() -> authService.login(request))
+            .isInstanceOf(AuthException.class)
+            .hasMessage("Credenciales inválidas");
+
+        verify(passwordEncoder, never()).matches(any(), any());
+    }
+
+    @Test
+    void loginShouldThrowExceptionWhenPasswordIsIncorrect() {
+        AuthDto.LoginRequest request = new AuthDto.LoginRequest("test@example.com", "wrongpassword");
+
+        User user = new User();
+        user.setId(10L);
+        user.setEmail("test@example.com");
+        user.setPasswordHash("hashed-password");
+        user.setActive(true);
+
+        when(userRepository.findByEmail("test@example.com")).thenReturn(java.util.Optional.of(user));
+        when(passwordEncoder.matches("wrongpassword", "hashed-password")).thenReturn(false);
+
+        assertThatThrownBy(() -> authService.login(request))
+            .isInstanceOf(AuthException.class)
+            .hasMessage("Credenciales inválidas");
+
+        verify(jwtService, never()).generateToken(any(), any());
+    }
 }

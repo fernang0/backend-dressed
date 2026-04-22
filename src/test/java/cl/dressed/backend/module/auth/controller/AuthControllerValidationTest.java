@@ -45,4 +45,42 @@ class AuthControllerValidationTest {
 
         verifyNoInteractions(authService);
     }
+
+    @Test
+    void loginShouldReturnValidationErrorWhenEmailIsEmpty() throws Exception {
+        String requestBody = """
+            {
+              \"email\": \"\",
+              \"password\": \"password123\"
+            }
+            """;
+
+        mockMvc.perform(post("/api/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestBody))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.message").value("validation failed"))
+            .andExpect(jsonPath("$.fields.email").value("email is required"));
+
+        verifyNoInteractions(authService);
+    }
+
+    @Test
+    void loginShouldReturnValidationErrorWhenPasswordIsEmpty() throws Exception {
+        String requestBody = """
+            {
+              \"email\": \"test@example.com\",
+              \"password\": \"\"
+            }
+            """;
+
+        mockMvc.perform(post("/api/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestBody))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.message").value("validation failed"))
+            .andExpect(jsonPath("$.fields.password").value("password is required"));
+
+        verifyNoInteractions(authService);
+    }
 }

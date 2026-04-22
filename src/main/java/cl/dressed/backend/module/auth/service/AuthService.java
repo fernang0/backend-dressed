@@ -47,4 +47,24 @@ public class AuthService {
             token
         );
     }
+
+    @Transactional(readOnly = true)
+    public AuthDto.LoginResponse login(AuthDto.LoginRequest request) {
+        String email = request.email().trim().toLowerCase();
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new AuthException("Credenciales inválidas"));
+
+        if (!passwordEncoder.matches(request.password(), user.getPasswordHash())) {
+            throw new AuthException("Credenciales inválidas");
+        }
+
+        String token = jwtService.generateToken(user.getId(), user.getEmail());
+
+        return new AuthDto.LoginResponse(
+            user.getId(),
+            user.getEmail(),
+            user.getActive(),
+            token
+        );
+    }
 }
