@@ -31,8 +31,10 @@ public class AuthService {
 
         User user = new User();
         user.setEmail(email);
-        user.setPassword(passwordEncoder.encode(request.password()));
-        user.setRole("USER");
+        user.setPasswordHash(passwordEncoder.encode(request.password()));
+        user.setOauthProvider(null);
+        user.setOauthProviderId(null);
+        user.setActive(true);
 
         User savedUser = userRepository.save(user);
         String token = jwtService.generateToken(savedUser.getId(), savedUser.getEmail());
@@ -40,7 +42,8 @@ public class AuthService {
         return new AuthDto.RegisterResponse(
             savedUser.getId(),
             savedUser.getEmail(),
-            savedUser.getRole(),
+            savedUser.getActive(),
+            savedUser.getCreatedAt(),
             token
         );
     }

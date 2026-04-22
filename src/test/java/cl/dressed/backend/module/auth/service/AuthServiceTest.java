@@ -40,14 +40,14 @@ class AuthServiceTest {
         AuthDto.RegisterRequest request = new AuthDto.RegisterRequest("test@example.com", "password123");
 
         when(userRepository.existsByEmail("test@example.com")).thenReturn(false);
-        when(passwordEncoder.encode("password123")).thenReturn("bcrypt-hash");
+        when(passwordEncoder.encode("password123")).thenReturn("hashed-password");
         when(jwtService.generateToken(10L, "test@example.com")).thenReturn("jwt-token");
 
         User persistedUser = new User();
         persistedUser.setId(10L);
         persistedUser.setEmail("test@example.com");
-        persistedUser.setPassword("bcrypt-hash");
-        persistedUser.setRole("USER");
+        persistedUser.setPasswordHash("hashed-password");
+        persistedUser.setActive(true);
 
         when(userRepository.save(any(User.class))).thenReturn(persistedUser);
 
@@ -58,11 +58,10 @@ class AuthServiceTest {
         User toPersist = userCaptor.getValue();
 
         assertThat(toPersist.getEmail()).isEqualTo("test@example.com");
-        assertThat(toPersist.getPassword()).isEqualTo("bcrypt-hash");
-        assertThat(toPersist.getRole()).isEqualTo("USER");
+        assertThat(toPersist.getPasswordHash()).isEqualTo("hashed-password");
         assertThat(response.id()).isEqualTo(10L);
         assertThat(response.email()).isEqualTo("test@example.com");
-        assertThat(response.role()).isEqualTo("USER");
+        assertThat(response.active()).isTrue();
         assertThat(response.token()).isEqualTo("jwt-token");
     }
 
