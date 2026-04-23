@@ -67,4 +67,27 @@ public class JwtService {
         }
         return escaped;
     }
+    public Long getUserIdFromRequest(jakarta.servlet.http.HttpServletRequest request) {
+    String authHeader = request.getHeader("Authorization");
+    if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        throw new IllegalArgumentException("Token no encontrado");
+    }
+    String token = authHeader.substring(7);
+    String[] parts = token.split("\\.");
+    if (parts.length != 3) {
+        throw new IllegalArgumentException("Token inválido");
+    }
+    String payloadJson = new String(
+        Base64.getUrlDecoder().decode(parts[1]),
+        StandardCharsets.UTF_8
+    );
+    // extrae "uid":12345
+    int uidIndex = payloadJson.indexOf("\"uid\":");
+    if (uidIndex == -1) {
+        throw new IllegalArgumentException("uid no encontrado en token");
+    }
+    String fromUid = payloadJson.substring(uidIndex + 6);
+    String uidValue = fromUid.split("[,}]")[0].trim();
+    return Long.parseLong(uidValue);
+}
 }
