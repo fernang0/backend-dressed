@@ -38,8 +38,7 @@ public class UserSizeController {
     @Valid @RequestBody UserSizeDto.BodyMeasurementsRequest dto,
     HttpServletRequest request) {
 
-    Long userId = jwtService.getUserIdFromRequest(request);
-
+    Long userId = 1L; //temporal luego dejar el con token
     userSizeService.updateProportions(userId, dto);
 
     return ResponseEntity.ok("Proporciones guardadas correctamente");
