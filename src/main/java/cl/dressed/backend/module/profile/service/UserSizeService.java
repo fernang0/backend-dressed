@@ -1,5 +1,6 @@
 package cl.dressed.backend.module.profile.service;
 
+import cl.dressed.backend.module.profile.dto.UserSizeDto;
 import cl.dressed.backend.module.profile.dto.UserSizeDto.UserSizeResponse;
 import cl.dressed.backend.module.profile.dto.UserSizeDto.UserSizeUpdateRequest;
 import cl.dressed.backend.module.profile.entity.UserSize;
@@ -8,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
+
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +27,25 @@ public class UserSizeService {
         if (request.bottom() != null) upsert(userId, "bottom", request.bottom());
         if (request.shoes() != null) upsert(userId, "shoes", request.shoes());
         return getSizes(userId);
+    }
+
+    public void updateProportions(Long userId, UserSizeDto.BodyMeasurementsRequest dto) {
+
+        if (dto.altura() != null) {
+            upsert(userId, "altura", String.valueOf(dto.altura()));
+        }
+
+        if (dto.pecho() != null) {
+            upsert(userId, "pecho", String.valueOf(dto.pecho()));
+        }
+
+        if (dto.cintura() != null) {
+            upsert(userId, "cintura", String.valueOf(dto.cintura()));
+        }
+
+        if (dto.cadera() != null) {
+            upsert(userId, "cadera", String.valueOf(dto.cadera()));
+        }
     }
 
     private void upsert(Long userId, String type, String value) {

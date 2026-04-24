@@ -1,5 +1,6 @@
 package cl.dressed.backend.module.profile.controller;
 
+import cl.dressed.backend.module.profile.dto.UserSizeDto;
 import cl.dressed.backend.module.profile.dto.UserSizeDto.UserSizeResponse;
 import cl.dressed.backend.module.profile.dto.UserSizeDto.UserSizeUpdateRequest;
 import cl.dressed.backend.module.profile.service.UserSizeService;
@@ -31,4 +32,16 @@ public class UserSizeController {
         Long userId = jwtService.getUserIdFromRequest(request);
         return ResponseEntity.ok(userSizeService.updateSizes(userId, dto));
     }
+
+    @PutMapping("/proportions")
+    public ResponseEntity<?> updateProportions(
+    @Valid @RequestBody UserSizeDto.BodyMeasurementsRequest dto,
+    HttpServletRequest request) {
+
+    Long userId = jwtService.getUserIdFromRequest(request);
+
+    userSizeService.updateProportions(userId, dto);
+
+    return ResponseEntity.ok("Proporciones guardadas correctamente");
+}
 }
