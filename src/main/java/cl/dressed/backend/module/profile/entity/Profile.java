@@ -1,46 +1,43 @@
 package cl.dressed.backend.module.profile.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "profiles")
+@Getter
+@Setter
 public class Profile {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String fullName;
+    @Column(name = "user_id", nullable = false)
+    private Long userId;
 
-    private String phone;
+    @Column(name = "name")
+    private String name;
 
-    public Long getId() {
-        return id;
-    }
+    @Column(name = "birth_date")
+    private LocalDate birthDate;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    @Column(name = "gender")
+    private String gender;
 
-    public String getFullName() {
-        return fullName;
-    }
+    @Column(name = "skin_tone")
+    private String skinTone;
 
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
+    @Column(name = "color_palette")
+    private String colorPalette;
 
-    public String getPhone() {
-        return phone;
-    }
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
 
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 }
