@@ -8,6 +8,7 @@ import java.time.Period;
 public class ProfileDto {
 
     public record ProfileUpdateRequest(
+        String name,
         LocalDate birthDate,
         String gender
     ) {}
@@ -21,6 +22,7 @@ public class ProfileDto {
     public record ProfileResponse(
         Long id,
         Long userId,
+        String name,
         LocalDate birthDate,
         Integer age,
         String gender,
@@ -36,6 +38,7 @@ public class ProfileDto {
             return new ProfileResponse(
                 profile.getId(),
                 profile.getUserId(),
+                profile.getName(),
                 profile.getBirthDate(),
                 age,
                 profile.getGender(),

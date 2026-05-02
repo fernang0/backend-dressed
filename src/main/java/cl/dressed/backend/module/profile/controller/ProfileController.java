@@ -1,10 +1,12 @@
 package cl.dressed.backend.module.profile.controller;
 
+import cl.dressed.backend.module.profile.dto.ProfileCompletenessResponse;
 import cl.dressed.backend.module.profile.dto.ProfileDto.ProfileResponse;
 import cl.dressed.backend.module.profile.dto.ProfileDto.ProfileUpdateRequest;
 import cl.dressed.backend.module.profile.dto.ProfileDto.SkinUpdateRequest;
 import cl.dressed.backend.module.profile.dto.ProfileStyleRequest;
 import cl.dressed.backend.module.profile.dto.ProfileStyleResponse;
+import cl.dressed.backend.module.profile.service.ProfileCompletenessService;
 import cl.dressed.backend.module.profile.service.ProfileService;
 import cl.dressed.backend.module.profile.service.UserStyleService;
 import cl.dressed.backend.module.auth.security.JwtService;
@@ -60,6 +62,13 @@ public class ProfileController {
             HttpServletRequest request) {
         Integer userId = jwtService.getUserIdFromRequest(request).intValue();
         return ResponseEntity.ok(userStyleService.updateStyles(userId, dto));
+    }
+    private final ProfileCompletenessService profileCompletenessService;
+
+    @GetMapping("/completeness")
+    public ResponseEntity<ProfileCompletenessResponse> getCompleteness(HttpServletRequest request) {
+        Long userId = jwtService.getUserIdFromRequest(request);
+        return ResponseEntity.ok(profileCompletenessService.calculate(userId));
     }
 
 }

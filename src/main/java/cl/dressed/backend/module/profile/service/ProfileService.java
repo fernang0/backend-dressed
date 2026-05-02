@@ -28,6 +28,10 @@ public class ProfileService {
         Profile profile = profileRepository.findByUserId(userId)
                 .orElseGet(() -> createEmptyProfile(userId));
 
+        if (request.name() != null){
+            profile.setName(request.name());
+        }
+
         if (request.birthDate() != null) {
             profile.setBirthDate(request.birthDate());
         }
