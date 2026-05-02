@@ -2,6 +2,7 @@ package cl.dressed.backend.module.profile.controller;
 
 import cl.dressed.backend.module.profile.dto.ProfileDto.ProfileResponse;
 import cl.dressed.backend.module.profile.dto.ProfileDto.ProfileUpdateRequest;
+import cl.dressed.backend.module.profile.dto.ProfileDto.SkinUpdateRequest;
 import cl.dressed.backend.module.profile.service.ProfileService;
 import cl.dressed.backend.module.auth.security.JwtService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -9,6 +10,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+
 
 @RestController
 @RequestMapping("/api/users/profile")
@@ -31,4 +34,12 @@ public class ProfileController {
         Long userId = jwtService.getUserIdFromRequest(request);
         return ResponseEntity.ok(profileService.updateProfile(userId, dto));
     }
+    @PutMapping("/skin")
+    public ResponseEntity<ProfileResponse> updateSkin(
+            @RequestBody SkinUpdateRequest dto,
+            HttpServletRequest request) {
+        Long userId = jwtService.getUserIdFromRequest(request);
+        return ResponseEntity.ok(profileService.updateSkin(userId, dto));
+    }
+
 }
