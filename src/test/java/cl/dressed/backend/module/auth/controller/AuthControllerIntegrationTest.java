@@ -20,6 +20,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+
 @WebMvcTest(AuthController.class)
 @AutoConfigureMockMvc(addFilters = false)
 @Import(GlobalExceptionHandler.class)
@@ -30,6 +31,9 @@ class AuthControllerIntegrationTest {
 
     @MockBean
     private AuthService authService;
+
+    @MockBean
+    private cl.dressed.backend.module.auth.security.JwtService jwtService;
 
     @Test
     void loginShouldReturnTokenWhenCredentialsAreValid() throws Exception {
