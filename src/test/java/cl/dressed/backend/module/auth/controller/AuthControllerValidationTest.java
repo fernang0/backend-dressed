@@ -27,6 +27,9 @@ class AuthControllerValidationTest {
     @MockBean
     private AuthService authService;
 
+    @MockBean
+    private cl.dressed.backend.module.auth.security.JwtService jwtService;
+
     @Test
     void registerShouldReturnValidationErrorWhenPasswordIsShorterThanEightChars() throws Exception {
         String requestBody = """
