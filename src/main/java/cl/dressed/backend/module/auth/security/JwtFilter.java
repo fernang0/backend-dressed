@@ -28,7 +28,6 @@ public class JwtFilter extends OncePerRequestFilter {
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             try {
-                String token = authHeader.substring(7);
                 Long userId = jwtService.getUserIdFromRequest(request);
 
                 UsernamePasswordAuthenticationToken authentication =

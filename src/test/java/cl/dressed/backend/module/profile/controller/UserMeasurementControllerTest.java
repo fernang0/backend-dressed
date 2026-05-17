@@ -23,7 +23,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
-import static org.assertj.core.api.Assertions.assertThat;
 
 @WebMvcTest(UserMeasurementController.class)
 @AutoConfigureMockMvc(addFilters = false)
