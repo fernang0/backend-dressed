@@ -3,6 +3,7 @@ package cl.dressed.backend.module.auth.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -10,8 +11,10 @@ import static org.mockito.Mockito.when;
 import cl.dressed.backend.module.auth.dto.AuthDto;
 import cl.dressed.backend.module.auth.entity.User;
 import cl.dressed.backend.module.auth.exception.AuthException;
+import cl.dressed.backend.module.auth.repository.PasswordRecoveryRepository;
 import cl.dressed.backend.module.auth.repository.UserRepository;
 import cl.dressed.backend.module.auth.security.JwtService;
+import cl.dressed.backend.shared.service.EmailService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -32,16 +35,22 @@ class AuthServiceTest {
     @Mock
     private JwtService jwtService;
 
+    @Mock
+    private PasswordRecoveryRepository passwordRecoveryRepository;
+
+    @Mock
+    private EmailService emailService;
+
     @InjectMocks
     private AuthService authService;
 
     @Test
-    void registerShouldCreateUserWhenEmailIsValidAndPasswordHasMinEightCharacters() {
+    void registerShouldCreateUserWhenEmailIsValid() {
         AuthDto.RegisterRequest request = new AuthDto.RegisterRequest("test@example.com", "password123");
 
         when(userRepository.existsByEmail("test@example.com")).thenReturn(false);
         when(passwordEncoder.encode("password123")).thenReturn("hashed-password");
-        when(jwtService.generateToken(10L, "test@example.com")).thenReturn("jwt-token");
+        when(jwtService.generateToken(any(), anyString(), anyString())).thenReturn("jwt-token");
 
         User persistedUser = new User();
         persistedUser.setId(10L);
@@ -66,7 +75,7 @@ class AuthServiceTest {
     }
 
     @Test
-    void registerShouldReturnExpectedErrorWhenEmailAlreadyExists() {
+    void registerShouldThrowWhenEmailAlreadyExists() {
         AuthDto.RegisterRequest request = new AuthDto.RegisterRequest("test@example.com", "password123");
 
         when(userRepository.existsByEmail("test@example.com")).thenReturn(true);
@@ -90,7 +99,7 @@ class AuthServiceTest {
 
         when(userRepository.findByEmail("test@example.com")).thenReturn(java.util.Optional.of(user));
         when(passwordEncoder.matches("password123", "hashed-password")).thenReturn(true);
-        when(jwtService.generateToken(10L, "test@example.com")).thenReturn("jwt-token");
+        when(jwtService.generateToken(any(), anyString(), anyString())).thenReturn("jwt-token");
 
         AuthDto.LoginResponse response = authService.login(request);
 
@@ -101,7 +110,7 @@ class AuthServiceTest {
     }
 
     @Test
-    void loginShouldThrowExceptionWhenEmailDoesNotExist() {
+    void loginShouldThrowWhenEmailDoesNotExist() {
         AuthDto.LoginRequest request = new AuthDto.LoginRequest("nonexistent@example.com", "password123");
 
         when(userRepository.findByEmail("nonexistent@example.com")).thenReturn(java.util.Optional.empty());
@@ -114,7 +123,7 @@ class AuthServiceTest {
     }
 
     @Test
-    void loginShouldThrowExceptionWhenPasswordIsIncorrect() {
+    void loginShouldThrowWhenPasswordIsIncorrect() {
         AuthDto.LoginRequest request = new AuthDto.LoginRequest("test@example.com", "wrongpassword");
 
         User user = new User();
@@ -130,6 +139,6 @@ class AuthServiceTest {
             .isInstanceOf(AuthException.class)
             .hasMessage("Credenciales inválidas");
 
-        verify(jwtService, never()).generateToken(any(), any());
+        verify(jwtService, never()).generateToken(any(), any(), any());
     }
 }
