@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.DigestUtils;
 
 @Service
 @RequiredArgsConstructor
@@ -18,6 +19,11 @@ public class GarmentService {
     public GarmentResponseDTO importGarment(GarmentRequestDTO dto) {
         if (dto.getName() == null || dto.getProductLink() == null || dto.getStoreId() == null) {
             throw new IllegalArgumentException("Campos obligatorios faltantes: name, productLink o storeId");
+        }
+
+        String hash = DigestUtils.md5DigestAsHex((dto.getStoreId() + "|" + dto.getProductLink()).getBytes());
+        if (garmentRepository.existsByDedupHash(hash)) {
+            throw new IllegalArgumentException("La prenda ya existe en el catálogo");
         }
 
         Garment garment = new Garment();
@@ -32,6 +38,7 @@ public class GarmentService {
         garment.setFit(dto.getFit());
         garment.setStyle(dto.getStyle());
         garment.setInStock(dto.getInStock() != null ? dto.getInStock() : true);
+        garment.setDedupHash(hash);
 
         Garment saved = garmentRepository.save(garment);
         return GarmentResponseDTO.from(saved);

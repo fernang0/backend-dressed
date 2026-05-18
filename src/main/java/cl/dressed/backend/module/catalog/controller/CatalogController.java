@@ -36,4 +36,5 @@ public class CatalogController {
             Pageable pageable) {
         return ResponseEntity.ok(garmentService.getProducts(category, size, inStock, pageable));
     }
+    
 }
