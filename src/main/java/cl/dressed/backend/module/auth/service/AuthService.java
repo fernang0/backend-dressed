@@ -50,7 +50,10 @@ public class AuthService {
 
         User savedUser = userRepository.save(user);
 
-        String token = jwtService.generateToken(savedUser.getId(), savedUser.getEmail());
+        String role = user.getRoles().isEmpty() ? "user"
+        : user.getRoles().get(0).getName();
+
+        String token = jwtService.generateToken(user.getId(), user.getEmail(), role);
 
         return new AuthDto.RegisterResponse(
                 savedUser.getId(),
@@ -73,7 +76,9 @@ public class AuthService {
             throw new AuthException("Credenciales inválidas");
         }
 
-        String token = jwtService.generateToken(user.getId(), user.getEmail());
+        String role = user.getRoles().isEmpty() ? "user" : user.getRoles().get(0).getName();
+
+        String token = jwtService.generateToken(user.getId(), user.getEmail(), role);
 
         return new AuthDto.LoginResponse(
                 user.getId(),

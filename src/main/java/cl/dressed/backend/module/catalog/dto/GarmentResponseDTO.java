@@ -54,4 +54,5 @@ public class GarmentResponseDTO {
     public String getStyle() { return style; }
     public Boolean getInStock() { return inStock; }
     public LocalDateTime getCreatedAt() { return createdAt; }
+    
 }

@@ -89,5 +89,36 @@ public class JwtService {
     String fromUid = payloadJson.substring(uidIndex + 6);
     String uidValue = fromUid.split("[,}]")[0].trim();
     return Long.parseLong(uidValue);
+    }
+    public String generateToken(Long userId, String email, String role) {
+    Instant now = Instant.now();
+    long issuedAt   = now.getEpochSecond();
+    long expiration = now.plusMillis(expirationMs).getEpochSecond();
+
+    String headerJson  = "{\"alg\":\"HS256\",\"typ\":\"JWT\"}";
+    String payloadJson = "{\"sub\":\"" + escapeJson(email) + "\",\"uid\":" + userId
+            + ",\"role\":\"" + escapeJson(role) + "\""
+            + ",\"iat\":" + issuedAt + ",\"exp\":" + expiration + "}";
+
+    String header  = base64UrlEncode(headerJson.getBytes(StandardCharsets.UTF_8));
+    String payload = base64UrlEncode(payloadJson.getBytes(StandardCharsets.UTF_8));
+    String content = header + "." + payload;
+    byte[] signature = hmacSha256(content.getBytes(StandardCharsets.UTF_8));
+    return content + "." + base64UrlEncode(signature);
 }
+
+    public String getRoleFromRequest(jakarta.servlet.http.HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new IllegalArgumentException("Token no encontrado");
+        }
+        String payloadJson = new String(
+            Base64.getUrlDecoder().decode(authHeader.substring(7).split("\\.")[1]),
+            StandardCharsets.UTF_8
+        );
+        int idx = payloadJson.indexOf("\"role\":\"");
+        if (idx == -1) throw new IllegalArgumentException("role no encontrado en token");
+        String fromRole = payloadJson.substring(idx + 8);
+        return fromRole.substring(0, fromRole.indexOf("\""));
+    }
 }

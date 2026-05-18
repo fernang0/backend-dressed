@@ -9,4 +9,5 @@ public interface GarmentRepository extends JpaRepository<Garment, Integer> {
     Page<Garment> findByCategory(String category, Pageable pageable);
     Page<Garment> findBySizeContaining(String size, Pageable pageable);
     Page<Garment> findByInStock(Boolean inStock, Pageable pageable);
+    boolean existsByDedupHash(String dedupHash);
 }
