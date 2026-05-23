@@ -36,6 +36,8 @@ public class JwtFilter extends OncePerRequestFilter {
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } catch (Exception e) {
+                // TEMPORAL para debug
+                System.out.println("JWT ERROR: " + e.getMessage());
                 SecurityContextHolder.clearContext();
             }
         }
