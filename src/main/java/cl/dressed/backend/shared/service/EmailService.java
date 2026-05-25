@@ -1,17 +1,43 @@
 package cl.dressed.backend.shared.service;
 
+import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class EmailService {
 
+    private final JavaMailSender mailSender;
+
+    @Value("${spring.mail.username}")
+    private String mailUsername;
+
+    @Value("${spring.mail.password}")
+    private String mailPassword;
+
+    @PostConstruct
+    public void validateConfiguration() {
+        if (!StringUtils.hasText(mailUsername) || !StringUtils.hasText(mailPassword)) {
+            throw new IllegalStateException("La configuración de correo está incompleta");
+        }
+    }
+
     public void sendEmail(String to, String subject, String body) {
-        log.info("========== EMAIL ==========");
-        log.info("TO: {}", to);
-        log.info("SUBJECT: {}", subject);
-        log.info("BODY: {}", body);
-        log.info("===========================");
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(to);
+        message.setSubject(subject);
+        message.setText(body);
+        message.setFrom(mailUsername);
+
+        mailSender.send(message);
+
+        log.info("Email enviado a {} con asunto {}", to, subject);
     }
 }
