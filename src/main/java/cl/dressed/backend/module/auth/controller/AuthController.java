@@ -2,8 +2,10 @@ package cl.dressed.backend.module.auth.controller;
 
 import cl.dressed.backend.module.auth.dto.AuthDto;
 import cl.dressed.backend.module.auth.dto.ForgotPasswordRequest;
+import cl.dressed.backend.module.auth.dto.GoogleAuthDto;
 import cl.dressed.backend.module.auth.dto.ResetPasswordRequest;
 import cl.dressed.backend.module.auth.service.AuthService;
+import cl.dressed.backend.module.auth.service.GoogleAuthService;
 
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -15,9 +17,11 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthService authService;
+    private final GoogleAuthService googleAuthService;
 
-    public AuthController(AuthService authService) {
+    public AuthController(AuthService authService, GoogleAuthService googleAuthService) {
         this.authService = authService;
+        this.googleAuthService = googleAuthService;
     }
 
     @PostMapping("/register")
@@ -33,6 +37,16 @@ public class AuthController {
             @Valid @RequestBody AuthDto.LoginRequest request
     ) {
         return ResponseEntity.ok(authService.login(request));
+    }
+
+    // =========================
+    // GOOGLE OAUTH
+    // =========================
+    @PostMapping("/google")
+    public ResponseEntity<GoogleAuthDto.GoogleLoginResponse> loginWithGoogle(
+            @Valid @RequestBody GoogleAuthDto.GoogleLoginRequest request
+    ) {
+        return ResponseEntity.ok(googleAuthService.loginWithGoogle(request));
     }
 
     // =========================
