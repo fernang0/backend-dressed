@@ -113,10 +113,29 @@ public class AuthService {
 
         String link = frontendUrl + "/reset-password?token=" + token;
 
+        String htmlBody = """
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9;">
+            <div style="background-color: #000; padding: 20px; text-align: center; border-radius: 8px 8px 0 0;">
+            <h1 style="color: #fff; margin: 0; font-size: 24px; letter-spacing: 4px;">DRESSED</h1>
+            </div>
+            <div style="background-color: #fff; padding: 30px; border-radius: 0 0 8px 8px;">
+            <h2 style="color: #333;">Recuperación de contraseña</h2>
+            <p style="color: #666;">Hemos recibido una solicitud para restablecer la contraseña de tu cuenta.</p>
+            <p style="color: #666;">Haz clic en el botón para crear una nueva contraseña. Este enlace expira en <strong>30 minutos</strong>.</p>
+            <div style="text-align: center; margin: 30px 0;">
+                <a href="%s" style="background-color: #000; color: #fff; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-size: 16px;">
+                    Restablecer contraseña
+                </a>
+            </div>
+            <p style="color: #999; font-size: 12px;">Si no solicitaste esto, ignora este correo. El enlace expirará automáticamente.</p>
+            </div>
+        </div>
+        """.formatted(link);
+
         emailService.sendEmail(
-                user.getEmail(),
-                "Recuperación de contraseña",
-                "Haz clic aquí para restablecer tu contraseña: " + link
+            user.getEmail(),
+            "Recuperación de contraseña - Dressed",
+            htmlBody
         );
     }
 

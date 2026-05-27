@@ -47,7 +47,7 @@ jwt.cookie.max-age=86400
 # =============================================
 # FRONTEND / CORS
 # =============================================
-app.frontend.url=${FRONTEND_URL:http://localhost:5173}
+app.frontend.url=http://localhost:5173
 cors.allowed.origins=http://localhost:5173
 
 # =============================================
