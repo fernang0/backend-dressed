@@ -31,7 +31,7 @@ public class CatalogController {
     @GetMapping("/products")
     public ResponseEntity<Page<GarmentResponseDTO>> getProducts(
             @RequestParam(required = false) String category,
-            @RequestParam(required = false) String size,
+            @RequestParam(name = "clothingSize", required = false) String size,
             @RequestParam(required = false) Boolean inStock,
             Pageable pageable) {
         return ResponseEntity.ok(garmentService.getProducts(category, size, inStock, pageable));
