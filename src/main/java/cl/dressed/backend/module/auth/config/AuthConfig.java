@@ -33,6 +33,7 @@ public class AuthConfig {
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/catalog/**").permitAll()
                 .requestMatchers("/api/admin/**").authenticated()
+                .requestMatchers("/api/outfits/**").authenticated()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
