@@ -15,9 +15,9 @@ public class UserMeasurementService {
     private final UserMeasurementRepository userMeasurementRepository;
 
     public UserMeasurementResponse getMeasurements(Long userId) {
-        UserMeasurement m = userMeasurementRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Medidas no encontradas para el usuario " + userId));
-        return toResponse(m);
+        return userMeasurementRepository.findByUserId(userId)
+            .map(this::toResponse)
+            .orElse(new UserMeasurementResponse(null, null, null, null, null, null, null));
     }
 
     public UserMeasurementResponse updateMeasurements(Long userId, UserMeasurementRequest request) {

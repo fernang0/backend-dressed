@@ -1,6 +1,7 @@
 package cl.dressed.backend.module.auth.config;
 
 import cl.dressed.backend.module.auth.security.JwtFilter;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -31,6 +32,7 @@ public class AuthConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/api/contact").permitAll()
                 .requestMatchers("/api/catalog/**").permitAll()
                 .requestMatchers("/api/admin/**").authenticated()
                 .requestMatchers("/api/outfits/**").authenticated()
@@ -46,5 +48,12 @@ public class AuthConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public FilterRegistrationBean jwtFilterRegistration(JwtFilter jwtFilter) {
+        FilterRegistrationBean registration = new FilterRegistrationBean<>(jwtFilter);
+        registration.setEnabled(false);
+        return registration;
     }
 }
