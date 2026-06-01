@@ -19,18 +19,8 @@ public class OutfitController {
     private final JwtService jwtService;
 
     /**
-     * POST /api/outfits/generate
-     * Genera un outfit nuevo para el usuario autenticado basado en sus tallas.
-     */
-    @PostMapping("/generate")
-    public ResponseEntity<OutfitResponseDTO> generateOutfit(HttpServletRequest request) {
-        Long userId = jwtService.getUserIdFromRequest(request);
-        return ResponseEntity.ok(outfitGeneratorService.generateOutfit(userId));
-    }
-
-    /**
      * GET /api/outfits
-     * Retorna todos los outfits generados para el usuario autenticado.
+     * Retorna outfits pre-generados compatibles con las tallas del usuario autenticado.
      */
     @GetMapping
     public ResponseEntity<List<OutfitResponseDTO>> getMyOutfits(HttpServletRequest request) {
