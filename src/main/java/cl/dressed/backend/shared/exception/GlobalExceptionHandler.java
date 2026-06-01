@@ -1,6 +1,7 @@
 package cl.dressed.backend.shared.exception;
 
 import cl.dressed.backend.module.auth.exception.AuthException;
+import cl.dressed.backend.module.auth.service.GoogleTokenVerifier.GoogleTokenVerificationException;
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -23,6 +24,13 @@ public class GlobalExceptionHandler {
             : HttpStatus.CONFLICT;
         
         return ResponseEntity.status(status).body(errorBody(status, ex.getMessage()));
+    }
+
+    @ExceptionHandler(GoogleTokenVerificationException.class)
+    public ResponseEntity<Map<String, Object>> handleGoogleTokenException(
+            GoogleTokenVerificationException ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(errorBody(HttpStatus.UNAUTHORIZED, ex.getMessage()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

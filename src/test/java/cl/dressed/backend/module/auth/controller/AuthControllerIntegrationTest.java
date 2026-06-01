@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import cl.dressed.backend.module.auth.dto.AuthDto;
+import cl.dressed.backend.module.auth.entity.User;
 import cl.dressed.backend.module.auth.exception.AuthException;
 import cl.dressed.backend.module.auth.service.AuthService;
 import cl.dressed.backend.shared.exception.GlobalExceptionHandler;
