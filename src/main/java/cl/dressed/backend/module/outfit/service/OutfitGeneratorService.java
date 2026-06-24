@@ -7,7 +7,10 @@ import cl.dressed.backend.module.outfit.entity.Outfit;
 import cl.dressed.backend.module.outfit.entity.OutfitGarment;
 import cl.dressed.backend.module.outfit.repository.OutfitGarmentRepository;
 import cl.dressed.backend.module.outfit.repository.OutfitRepository;
+import cl.dressed.backend.module.outfit.util.GenderConverter;
+import cl.dressed.backend.module.profile.entity.Profile;
 import cl.dressed.backend.module.profile.entity.UserSize;
+import cl.dressed.backend.module.profile.repository.ProfileRepository;
 import cl.dressed.backend.module.profile.repository.UserSizeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,10 +29,11 @@ public class OutfitGeneratorService {
     private final OutfitRepository outfitRepository;
     private final OutfitGarmentRepository outfitGarmentRepository;
     private final UserSizeRepository userSizeRepository;
+    private final ProfileRepository profileRepository;
 
     /**
      * Retorna los outfits pre-generados por el modelo ML
-     * cuyas prendas (top y bottom) sean compatibles con las tallas del usuario.
+     * cuyas prendas (top y bottom) sean compatibles con las tallas y género del usuario.
      */
     @Transactional(readOnly = true)
     public List<OutfitResponseDTO> getOutfitsForUser(Long userId) {
@@ -56,10 +60,25 @@ public class OutfitGeneratorService {
                 "Se requieren tallas de top y bottom para generar outfits.");
         }
 
-        // 2. Buscar outfits compatibles (lógica en la query)
-        List<Outfit> outfits = outfitRepository.findCompatibleOutfits(topSize, bottomSize);
+        // 2. Obtener gender del usuario desde su perfil
+        Profile profile = profileRepository.findByUserId(userId)
+            .orElseThrow(() -> new IllegalStateException(
+                "El usuario no tiene perfil. Por favor completa tu perfil."));
 
-        // 3. Armar respuesta
+        String userGenderEnglish = profile.getGender();
+        if (userGenderEnglish == null) {
+            throw new IllegalStateException(
+                "El usuario no tiene gender registrado. Por favor completa tu perfil.");
+        }
+
+        // 3. Convertir gender a español para buscar prendas
+        String userGenderSpanish = GenderConverter.convertProfileGenderToGarmentGender(userGenderEnglish);
+
+        // 4. Buscar outfits compatibles (talla + gender)
+        List<Outfit> outfits = outfitRepository.findCompatibleOutfits(
+            topSize, bottomSize, userGenderSpanish);
+
+        // 5. Armar respuesta
         return outfits.stream().map(outfit -> {
             List<OutfitGarment> outfitGarments =
                 outfitGarmentRepository.findByOutfitId(outfit.getId());

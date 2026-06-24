@@ -10,7 +10,8 @@ import java.util.List;
 public interface OutfitRepository extends JpaRepository<Outfit, Long> {
 
     // Outfits pre-generados por el modelo ML (user_id IS NULL)
-    // donde el top contiene la talla del usuario y el bottom también
+    // donde el top y bottom contienen la talla del usuario
+    // y ambas prendas tienen el gender especificado
     @Query("""
         SELECT DISTINCT o FROM Outfit o
         JOIN OutfitGarment og1 ON og1.outfitId = o.id AND og1.role = 'top'
@@ -20,11 +21,14 @@ public interface OutfitRepository extends JpaRepository<Outfit, Long> {
         WHERE o.userId IS NULL
           AND t.size LIKE CONCAT('%', :topSize, '%')
           AND b.size LIKE CONCAT('%', :bottomSize, '%')
+          AND t.gender = :gender
+          AND b.gender = :gender
         ORDER BY o.id DESC
         LIMIT 100
         """)
     List<Outfit> findCompatibleOutfits(
         @Param("topSize") String topSize,
-        @Param("bottomSize") String bottomSize
+        @Param("bottomSize") String bottomSize,
+        @Param("gender") String gender
     );
 }
